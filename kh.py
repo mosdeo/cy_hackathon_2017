@@ -138,7 +138,7 @@ df_routine_table['min_dist'] = [
     for i in range(df_routine_table.index.size)
 ]
 
-display(df_routine_table)
+# display(df_routine_table)
 
 # display( 
 #     df_routine_table.sort_values(by='min_dist').index[0]
