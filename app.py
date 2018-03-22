@@ -20,11 +20,10 @@ from kh import predict
 
 app = Flask(__name__, static_url_path='')
 
-my_CHANNEL_ACCESS_TOKEN = 'Nejo7izbm3I94qsFsvVeHrJmQ8KGVHQWjk0Z7RdFBDzrUzPCGwmrYNzO7LG/a+ZiNkcDGStjtvcvy8ASyXPEYy8JsrevPPBALpRLkWstbkNb3G702j+eILRA+tm4Ikt/ElI6UPZ8fv4gT7BRdwHq9AdB04t89/1O/w1cDnyilFU=' #open('channel_access_keys/channel_access_token.ini').read()
-print(my_CHANNEL_ACCESS_TOKEN)
-
-my_CHANNEL_SECRET = '123b64f1cbb589326196a5683e98f663' #open("channel_access_keys/channel_access_secret.ini").read()
-print(my_CHANNEL_SECRET)
+my_CHANNEL_ACCESS_TOKEN = open('channel_access_keys/channel_access_token.ini').read().rstrip('\n')
+my_CHANNEL_SECRET = open("channel_access_keys/channel_access_secret.ini").read().rstrip('\n')
+print(my_CHANNEL_ACCESS_TOKEN, end='')
+print(my_CHANNEL_SECRET, end='')
 
 line_bot_api = LineBotApi(my_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(my_CHANNEL_SECRET)
