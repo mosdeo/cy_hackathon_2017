@@ -128,34 +128,41 @@ print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 import Levenshtein
 import pandas as pd
 
-# 讀取慣例庫
-df_routine_table = pd.read_csv('routine_table.csv')
-df_routine_table.fillna(value='', inplace=True) # 以免資料不等長出錯
+# 慣例回應
+def get_routine_response(x):
+    # 讀取慣例庫
+    df_routine_table = pd.read_csv('routine_table.csv')
+    df_routine_table.fillna(value='', inplace=True) # 以免資料不等長出錯
 
-# 計算和各類別的距離
-df_routine_table['min_dist'] = [
-    np.min([Levenshtein.distance('鑰匙掉了',i) for i in df_routine_table.iloc[i]])
-    for i in range(df_routine_table.index.size)
-]
+    # 計算和各類別的距離
+    df_routine_table['min_dist'] = [
+        np.min([Levenshtein.distance(x ,i) for i in df_routine_table.iloc[i]])
+        for i in range(df_routine_table.index.size)
+    ]
 
-# display(df_routine_table)
+    # 按照距離降冪排序
+    df_routine_table.sort_values(by = 'min_dist', inplace = True)
 
-# display( 
-#     df_routine_table.sort_values(by='min_dist').index[0]
-# )
+    if(4 < df_routine_table['min_dist'].iloc[0]):
+        print('距離過大，應該使用其他分類器')
+        return -1
+    else:
+        return df_routine_table['response'].iloc[0]
+
+# get_routine_response('這是一個嘗試讓距離過大的例句')
 
 
-#%%
 def predict(x):
-    
-
-    if not pipeline.named_steps['vectorize'].transform([x]).nnz:
-        return \
-                '請換個更仔細的方式再敘述您的問題！'
-    answer = label_encoder.inverse_transform(pipeline.predict([x]))[0]
-    answer_text = answer + '\n' + answer_data.get(answer, '')
-    return answer_text
-
+    routine_response = get_routine_response(x)
+    if(-1!=routine_response): #距離任何一類慣例夠接近
+        return routine_response
+    else: #距離任何一類慣例太遠，改用語料庫+機器學習   
+        if not pipeline.named_steps['vectorize'].transform([x]).nnz:
+            return \
+                    '請換個更仔細的方式再敘述您的問題！'
+        answer = label_encoder.inverse_transform(pipeline.predict([x]))[0]
+        answer_text = answer + '\n' + answer_data.get(answer, '')
+        return answer_text
 
 #%%
 predict('')
